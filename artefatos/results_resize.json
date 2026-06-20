@@ -1,0 +1,13 @@
+{
+  "iou_threshold": 0.5,
+  "total_ground_truth": 2225,
+  "total_predictions": 1541,
+  "true_positives": 1049,
+  "false_positives": 492,
+  "false_negatives": 1176,
+  "precision": 0.6807268007787152,
+  "recall": 0.47146067415730336,
+  "f1_score": 0.5570897503983006,
+  "mean_iou": 0.7001146292645472,
+  "num_images_evaluated": 173
+}
