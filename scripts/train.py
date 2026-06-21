@@ -1,4 +1,5 @@
-"""treina u-net com backbone resnet34 pra segmentacao de predios.
+"""
+treina u-net com backbone resnet34 pra segmentacao de predios.
 
 usa a lib segmentation_models pra arquitetura do modelo com backbone
 pre-treinado no imagenet. treinamento usa loss combinada BCE + Dice
@@ -240,27 +241,27 @@ def main():
 
     print("SpaceNet 2 AOI_3_Paris - treino U-Net")
     print("=" * 50)
-    print(f"  data dir: {args.data_dir}")
-    print(f"  backbone: {args.backbone}")
-    print(f"  modo: {args.mode}")
-    print(f"  crop size: {args.crop_size}x{args.crop_size}")
-    print(f"  batch size: {args.batch_size}")
-    print(f"  epocas: {args.epochs}")
-    print(f"  learning rate: {args.lr}")
-    print(f"  paciencia: {args.patience}")
-    print(f"  output dir: {args.output_dir}")
-    print(f"  splits file: {args.splits_json}")
+    print(f"    data dir: {args.data_dir}")
+    print(f"    backbone: {args.backbone}")
+    print(f"    modo: {args.mode}")
+    print(f"    crop size: {args.crop_size}x{args.crop_size}")
+    print(f"    batch size: {args.batch_size}")
+    print(f"    epocas: {args.epochs}")
+    print(f"    learning rate: {args.lr}")
+    print(f"    paciencia: {args.patience}")
+    print(f"    output dir: {args.output_dir}")
+    print(f"    splits file: {args.splits_json}")
 
     # descobre tiles e cria/carrega splits
     print("\nbuscando tiles...")
     tiles = discover_tiles(args.data_dir)
-    print(f"  encontrados {len(tiles)} tiles rotulados")
+    print(f"    encontrados {len(tiles)} tiles rotulados")
 
     if os.path.exists(args.splits_json):
-        print(f"  carregando splits existentes de {args.splits_json}")
+        print(f"    carregando splits existentes de {args.splits_json}")
         splits = load_splits_json(args.splits_json, tiles)
     else:
-        print(f"  criando splits 70/15/15 (seed={args.seed})...")
+        print(f"    criando splits 70/15/15 (seed={args.seed})...")
         splits = create_splits(tiles, seed=args.seed)
         os.makedirs(args.output_dir, exist_ok=True)
         save_splits_json(
@@ -271,10 +272,10 @@ def main():
     n_train = len(splits["train"])
     n_val = len(splits["val"])
     n_test = len(splits["test"])
-    print(f"  treino: {n_train}, val: {n_val}, teste: {n_test}")
+    print(f"    treino: {n_train}, val: {n_val}, teste: {n_test}")
 
     # usa mascaras em cache se create_masks.py foi rodado (rapido); senao o
-    # loader rasteriza on-the-fly a cada epoca (correto mas lento).
+    # loader rasteriza a cada epoca (MUITO mas lento).
     mask_dir = os.path.join(args.data_dir, "train", "masks")
     if os.path.isdir(mask_dir):
         print(f"  usando mascaras em cache de {mask_dir}")
@@ -383,8 +384,8 @@ def main():
         json.dump(history_dict, f, indent=2)
 
     print(f"\ntreino finalizado!")
-    print(f"  melhor modelo salvo: {model_path}")
-    print(f"  historico de treino: {history_path}")
+    print(f"    melhor modelo salvo: {model_path}")
+    print(f"    historico de treino: {history_path}")
 
     # mostra metricas finais
     if "val_iou_metric" in history.history:
@@ -394,8 +395,8 @@ def main():
 
     final_loss = history.history["loss"][-1]
     final_val_loss = history.history["val_loss"][-1]
-    print(f"  loss treino final: {final_loss:.4f}")
-    print(f"  loss val final: {final_val_loss:.4f}")
+    print(f"    loss treino final: {final_loss:.4f}")
+    print(f"    loss val final: {final_val_loss:.4f}")
 
 
 if __name__ == "__main__":

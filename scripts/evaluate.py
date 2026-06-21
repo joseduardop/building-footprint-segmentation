@@ -1,4 +1,5 @@
-"""avalia predicoes de pegadas de predios contra ground truth.
+"""
+avalia predicoes de pegadas de predios contra ground truth.
 
 calcula metricas a nivel de instancia: IoU por predio e F1-score
 (precisao/recall) onde um match eh contado quando IoU > 0.5 entre
@@ -110,7 +111,7 @@ def match_predictions_to_ground_truth(pred_polygons, gt_polygons,
         for j, pred in enumerate(pred_polygons):
             iou_matrix[i, j] = compute_iou(gt, pred)
 
-    # matching guloso: atribui melhor predicao pra cada ground truth
+    # matching: atribui melhor predicao pra cada ground truth
     matched_gt = set()
     matched_pred = set()
     matches = []
@@ -155,7 +156,7 @@ def load_ground_truth(gt_path):
     """carrega poligonos ground truth de arquivo(s) GeoJSON.
 
     suporta:
-    - arquivo GeoJSON unico
+    - arquivo geoJSON unico
     - diretorio de arquivos GeoJSON por tile (formato SpaceNet 2)
 
     as chaves sao derivadas do padrao img{N} nos nomes de arquivo pra
@@ -195,7 +196,7 @@ def load_ground_truth(gt_path):
                     key = os.path.splitext(os.path.basename(f))[0]
                 gt_polygons[key] = polys
             except Exception as e:
-                print(f"  AVISO: nao consegui ler {f}: {e}")
+                print(f"    AVISO: nao consegui ler {f}: {e}")
     else:
         raise FileNotFoundError(f"caminho do ground truth nao encontrado: {gt_path}")
 
@@ -251,8 +252,8 @@ def evaluate(predictions_path, ground_truth_path, iou_threshold=0.5,
     print(f"carregando predicoes de: {predictions_path}")
     pred_by_image = load_predictions(predictions_path)
     total_preds = sum(len(v) for v in pred_by_image.values())
-    print(f"  total de predios preditos: {total_preds}")
-    print(f"  imagens com predicoes: {len(pred_by_image)}")
+    print(f"    total de predios preditos: {total_preds}")
+    print(f"    imagens com predicoes: {len(pred_by_image)}")
 
     print(f"carregando ground truth de: {ground_truth_path}")
     gt_by_image = load_ground_truth(ground_truth_path)
@@ -260,8 +261,8 @@ def evaluate(predictions_path, ground_truth_path, iou_threshold=0.5,
     if split_filter is not None:
         gt_by_image = {k: v for k, v in gt_by_image.items() if k in split_filter}
     total_gt = sum(len(v) for v in gt_by_image.values())
-    print(f"  total de predios ground truth: {total_gt}")
-    print(f"  imagens com ground truth: {len(gt_by_image)}")
+    print(f"    total de predios ground truth: {total_gt}")
+    print(f"    imagens com ground truth: {len(gt_by_image)}")
 
     # agrega resultados
     total_tp = 0
@@ -343,16 +344,16 @@ def print_report(results):
     print("\n" + "=" * 60)
     print("RELATORIO DE AVALIACAO - SpaceNet 2 AOI_3_Paris")
     print("=" * 60)
-    print(f"  limiar IoU: {results['iou_threshold']}")
-    print(f"  predios ground truth: {results['total_ground_truth']}")
-    print(f"  predios preditos: {results['total_predictions']}")
-    print(f"  verdadeiros positivos: {results['true_positives']}")
-    print(f"  falsos positivos: {results['false_positives']}")
-    print(f"  falsos negativos: {results['false_negatives']}")
-    print(f"  precisao: {results['precision']:.4f}")
-    print(f"  recall: {results['recall']:.4f}")
-    print(f"  F1-score: {results['f1_score']:.4f}")
-    print(f"  IoU medio (matcheados): {results['mean_iou']:.4f}")
+    print(f"    limiar IoU: {results['iou_threshold']}")
+    print(f"    predios ground truth: {results['total_ground_truth']}")
+    print(f"    predios preditos: {results['total_predictions']}")
+    print(f"    verdadeiros positivos: {results['true_positives']}")
+    print(f"    falsos positivos: {results['false_positives']}")
+    print(f"    falsos negativos: {results['false_negatives']}")
+    print(f"    precisao: {results['precision']:.4f}")
+    print(f"    recall: {results['recall']:.4f}")
+    print(f"    F1-score: {results['f1_score']:.4f}")
+    print(f"    IoU medio (matcheados): {results['mean_iou']:.4f}")
     print("=" * 60)
 
     # resumo por imagem (top 10)

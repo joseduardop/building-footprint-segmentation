@@ -1,4 +1,5 @@
-"""carregador de dataset spacenet 2 aoi_3_paris com pipeline tf.data.
+"""
+carregador de dataset spacenet 2 aoi_3_paris com pipeline tf.data.
 
 le tiles rgb-pansharpen geotiff (650x650, 16-bit, 3 bandas) e rasteriza
 as anotacoes geojson de edificacoes em mascaras binarias. aplica normalizacao
@@ -438,7 +439,7 @@ def create_dataset(tiles, batch_size=8, crop_size=256, shuffle=True,
 
 
 def main():
-    """teste do carregador de dataset via cli."""
+    """teste do carregador de dataset via cli.""" # usado só pra debug
     parser = argparse.ArgumentParser(
         description="carregador de dataset spacenet 2 aoi_3_paris. "
                     "descobre tiles, cria splits 70/15/15 e testa o pipeline tf.data."

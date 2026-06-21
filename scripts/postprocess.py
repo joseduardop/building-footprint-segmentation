@@ -1,4 +1,5 @@
-"""pos-processa predicoes do modelo em poligonos GeoJSON georreferenciados.
+"""
+pos-processa predicoes do modelo em poligonos GeoJSON georreferenciados.
 
 carrega um modelo treinado, roda inferencia nas imagens de teste usando
 sliding-window tiling (patches de 256x256), aplica limpeza morfologica
@@ -181,8 +182,7 @@ def predict_resize(model, image, target_size=256, backbone="resnet34"):
     return pred_full
 
 
-def predict_full_tile(model, image, mode="tiling", patch_size=256,
-                      backbone="resnet34", stride=None):
+def predict_full_tile(model, image, mode="tiling", patch_size=256, backbone="resnet34", stride=None):
     """prediz um tile inteiro usando o modo escolhido (tiling ou resize).
 
     mantem a inferencia consistente com como o modelo foi treinado:
@@ -512,16 +512,16 @@ def main():
 
     print(f"SpaceNet 2 AOI_3_Paris - pos-processamento")
     print("=" * 50)
-    print(f"  imagens: {len(image_files)} em {image_dir}")
-    print(f"  modelo: {args.model}")
-    print(f"  modo: {args.mode}")
-    print(f"  patch size: {args.patch_size}x{args.patch_size}")
+    print(f"    imagens: {len(image_files)} em {image_dir}")
+    print(f"    modelo: {args.model}")
+    print(f"    modo: {args.mode}")
+    print(f"    patch size: {args.patch_size}x{args.patch_size}")
     if args.mode == "tiling":
-        print(f"  stride: {stride}")
-    print(f"  limiar: {args.threshold}")
-    print(f"  area minima: {args.min_area} px")
-    print(f"  kernel morf: {args.morph_kernel}")
-    print(f"  saida: {args.output}")
+        print(f"    stride: {stride}")
+    print(f"    limiar: {args.threshold}")
+    print(f"    area minima: {args.min_area} px")
+    print(f"    kernel morf: {args.morph_kernel}")
+    print(f"    saida: {args.output}")
 
     # carrega modelo
     model = load_model(args.model, args.backbone)
@@ -590,10 +590,10 @@ def main():
     gdf.to_file(args.output, driver="GeoJSON")
 
     print(f"\nresultados:")
-    print(f"  total de predios: {len(all_polygons)}")
-    print(f"  imagens processadas: {len(image_files)}")
-    print(f"  saida: {args.output}")
-    print(f"  CRS: EPSG:4326")
+    print(f"    total de predios: {len(all_polygons)}")
+    print(f"    imagens processadas: {len(image_files)}")
+    print(f"    saida: {args.output}")
+    print(f"    CRS: EPSG:4326")
 
 
 if __name__ == "__main__":

@@ -298,17 +298,17 @@ def validate_dataset(data_dir, output_dir=None):
         ])
 
     print(f"\ncontagem de arquivos:")
-    print(f"  treino RGB-PanSharpen .tif: {len(all_images)}")
-    print(f"  treino buildings .geojson: {len(all_geojsons)}")
-    print(f"  pares de treino pareados: {len(pairs)}")
-    print(f"  teste RGB-PanSharpen .tif: {n_test_images}")
+    print(f"    treino RGB-PanSharpen .tif: {len(all_images)}")
+    print(f"    treino buildings .geojson: {len(all_geojsons)}")
+    print(f"    pares de treino pareados: {len(pairs)}")
+    print(f"    teste RGB-PanSharpen .tif: {n_test_images}")
 
     unmatched_images = set(all_images.keys()) - set(all_geojsons.keys())
     unmatched_geojsons = set(all_geojsons.keys()) - set(all_images.keys())
     if unmatched_images:
-        print(f"  imagens sem par (sem geojson): {len(unmatched_images)}")
+        print(f"    imagens sem par (sem geojson): {len(unmatched_images)}")
     if unmatched_geojsons:
-        print(f"  geojsons sem par (sem imagem): {len(unmatched_geojsons)}")
+        print(f"    geojsons sem par (sem imagem): {len(unmatched_geojsons)}")
 
     if not pairs:
         print("\nAVISO: nenhum par imagem/geojson encontrado!")
@@ -394,23 +394,23 @@ def validate_dataset(data_dir, output_dir=None):
     print("\n" + "=" * 60)
     print("RELATORIO DE VALIDACAO - SpaceNet 2 AOI_3_Paris")
     print("=" * 60)
-    print(f"  imagens treino: {len(all_images)}")
-    print(f"  GeoJSONs treino: {len(all_geojsons)}")
-    print(f"  pares pareados: {len(pairs)}")
-    print(f"  rasterizados com sucesso: {valid_count}")
-    print(f"  total de predios: {total_buildings}")
-    print(f"  tiles vazios (0 predios): {empty_tiles}")
-    print(f"  imagens teste (sem rot): {n_test_images}")
+    print(f"    imagens treino: {len(all_images)}")
+    print(f"    GeoJSONs treino: {len(all_geojsons)}")
+    print(f"    pares pareados: {len(pairs)}")
+    print(f"    rasterizados com sucesso: {valid_count}")
+    print(f"    total de predios: {total_buildings}")
+    print(f"    tiles vazios (0 predios): {empty_tiles}")
+    print(f"    imagens teste (sem rot): {n_test_images}")
     if dimensions:
-        print(f"  dimensoes do tile: {dimensions[0][0]}x{dimensions[0][1]}")
-        print(f"  numero de bandas: {dimensions[0][2]}")
+        print(f"    dimensoes do tile: {dimensions[0][0]}x{dimensions[0][1]}")
+        print(f"    numero de bandas: {dimensions[0][2]}")
     if pixel_ranges:
-        print(f"  dtype dos pixels: {pixel_ranges[0][2]}")
-        print(f"  range dos pixels: [{pixel_ranges[0][0]}, {pixel_ranges[0][1]}]")
+        print(f"    dtype dos pixels: {pixel_ranges[0][2]}")
+        print(f"    range dos pixels: [{pixel_ranges[0][0]}, {pixel_ranges[0][1]}]")
     if crs_list:
-        print(f"  CRS: {crs_list[0]}")
-    print(f"  overlays de debug: {debug_dir}")
-    print(f"  mascaras salvas: {masks_dir}")
+        print(f"    CRS: {crs_list[0]}")
+    print(f"    overlays de debug: {debug_dir}")
+    print(f"    mascaras salvas: {masks_dir}")
     print("=" * 60)
 
     return {

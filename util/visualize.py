@@ -63,8 +63,6 @@ def extract_image_number(filename):
     return m.group(1) if m else None
 
 
-# -- OVERLAY -----------------------------------------------------------------
-
 def draw_polygons(ax, polygons, color, alpha=0.3, linewidth=1.5):
     for poly in polygons:
         if poly.is_empty:
@@ -111,7 +109,8 @@ def make_overlay(image, pred_polys=None, gt_polys=None, title=""):
 
 
 def geo_to_pixel(polygon, transform):
-    """converte poligono geografico pra coordenadas de pixel usando transformada inversa.
+    """
+    converte poligono geografico pra coordenadas de pixel usando transformada inversa.
 
     trata coordenadas 2D e 3D - poligonos GT do SpaceNet carregam um Z=0
     que precisa ser ignorado (senao desempacotar 'lon, lat' da erro).
@@ -204,7 +203,6 @@ def cmd_overlay(args):
         print(f"  img{tid}: {len(pred_polys_px)} pred, {len(gt_polys_px)} gt -> {out_path}")
 
 
-# -- CURVES ------------------------------------------------------------------
 
 def cmd_curves(args):
     os.makedirs(args.output_dir, exist_ok=True)
@@ -248,7 +246,6 @@ def cmd_curves(args):
     print(f"  curvas salvas em: {out_path}")
 
 
-# -- GRID --------------------------------------------------------------------
 
 def cmd_grid(args):
     os.makedirs(args.output_dir, exist_ok=True)
@@ -301,7 +298,6 @@ def cmd_grid(args):
     print(f"  grid salvo em: {out_path}")
 
 
-# -- CLI ---------------------------------------------------------------------
 
 def main():
     parser = argparse.ArgumentParser(

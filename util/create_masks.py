@@ -57,11 +57,11 @@ def main():
 
     print("SpaceNet 2 AOI_3_Paris - pre-rasterizando mascaras")
     print("=" * 50)
-    print(f"  data dir: {args.data_dir}")
-    print(f"  output dir: {output_dir}")
+    print(f"    data dir: {args.data_dir}")
+    print(f"    output dir: {output_dir}")
 
     tiles = discover_tiles(args.data_dir)
-    print(f"  tiles: {len(tiles)}")
+    print(f"    tiles: {len(tiles)}")
 
     created = 0
     skipped = 0
@@ -86,16 +86,16 @@ def main():
         created += 1
 
         if (i + 1) % 100 == 0:
-            print(f"  [{i + 1}/{len(tiles)}] processados...")
+            print(f"    [{i + 1}/{len(tiles)}] processados...")
 
     print("\n" + "=" * 50)
     print("RESUMO")
     print("=" * 50)
-    print(f"  mascaras criadas: {created}")
-    print(f"  puladas (ja existiam): {skipped}")
-    print(f"  mascaras vazias (s/ pr): {empty}")
-    print(f"  total pixels de predio: {total_building_px}")
-    print(f"  salvas em: {output_dir}")
+    print(f"    mascaras criadas: {created}")
+    print(f"    puladas (ja existiam): {skipped}")
+    print(f"    mascaras vazias (s/ pr): {empty}")
+    print(f"    total pixels de predio: {total_building_px}")
+    print(f"    salvas em: {output_dir}")
 
 
 if __name__ == "__main__":
