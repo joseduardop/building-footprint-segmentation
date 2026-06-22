@@ -245,18 +245,6 @@ def random_crop(image, mask, crop_size=256):
     return image_crop, mask_crop
 
 
-def center_crop(image, mask, crop_size=256):
-    """recorta o centro do par imagem/mascara (usado na validacao)."""
-    h, w = image.shape[:2]
-    top = max(0, (h - crop_size) // 2)
-    left = max(0, (w - crop_size) // 2)
-
-    image_crop = image[top:top + crop_size, left:left + crop_size]
-    mask_crop = mask[top:top + crop_size, left:left + crop_size]
-
-    return image_crop, mask_crop
-
-
 def fixed_crop(image, mask, top, left, crop_size=256):
     """recorta na posicao (top, left) fixa, pra cobertura completa do tile."""
     h, w = image.shape[:2]
