@@ -299,6 +299,169 @@ def cmd_grid(args):
 
 
 
+def cmd_compare(args):
+    """compara tiling vs resize vs gabarito lado a lado num mesmo tile."""
+    os.makedirs(args.output_dir, exist_ok=True)
+
+    pred_tiling = gpd.read_file(args.predictions_tiling)
+    pred_resize = gpd.read_file(args.predictions_resize)
+
+    # agrupa por tile
+    def group_by_tile(gdf):
+        grouped = {}
+        for _, row in gdf.iterrows():
+            img_id = extract_image_number(str(row.get("image_id", "")))
+            if img_id and row.geometry and not row.geometry.is_empty:
+                grouped.setdefault(img_id, []).append(row.geometry)
+        return grouped
+
+    tiling_by_img = group_by_tile(pred_tiling)
+    resize_by_img = group_by_tile(pred_resize)
+
+    # pega tiles que tem predicao nos dois
+    common = sorted(set(tiling_by_img.keys()) & set(resize_by_img.keys()),
+                    key=lambda x: -(len(tiling_by_img.get(x, [])) + len(resize_by_img.get(x, []))))
+
+    if args.tile_ids:
+        tile_ids = args.tile_ids
+    else:
+        tile_ids = common[:args.num_tiles]
+
+    img_dir = os.path.join(args.data_dir, "train", "RGB-PanSharpen")
+    gt_dir = os.path.join(args.data_dir, "train", "geojson", "buildings")
+
+    for tid in tile_ids:
+        tif_path = os.path.join(img_dir, f"RGB-PanSharpen_AOI_3_Paris_img{tid}.tif")
+        if not os.path.exists(tif_path):
+            continue
+
+        image = load_rgb(tif_path)
+        with rasterio.open(tif_path) as src:
+            transform = src.transform
+
+        # converte pra pixel
+        def polys_to_px(polys):
+            result = []
+            for p in polys:
+                try:
+                    result.append(geo_to_pixel(p, transform))
+                except Exception:
+                    pass
+            return result
+
+        tiling_px = polys_to_px(tiling_by_img.get(tid, []))
+        resize_px = polys_to_px(resize_by_img.get(tid, []))
+
+        # gabarito
+        gt_px = []
+        gt_path = os.path.join(gt_dir, f"buildings_AOI_3_Paris_img{tid}.geojson")
+        if os.path.exists(gt_path):
+            gt_gdf = gpd.read_file(gt_path)
+            for geom in gt_gdf.geometry:
+                if geom and geom.is_valid and not geom.is_empty:
+                    try:
+                        gt_px.append(geo_to_pixel(geom, transform))
+                    except Exception:
+                        pass
+
+        fig, axes = plt.subplots(1, 4, figsize=(24, 6))
+
+        # 1: imagem original
+        axes[0].imshow(image)
+        axes[0].set_title("imagem original")
+        axes[0].axis("off")
+
+        # 2: resize (vermelho forte)
+        axes[1].imshow(image)
+        draw_polygons(axes[1], resize_px, color="#cc0000", alpha=0.45, linewidth=2)
+        axes[1].set_title(f"resize ({len(resize_px)} predios)")
+        axes[1].axis("off")
+
+        # 3: tiling (azul)
+        axes[2].imshow(image)
+        draw_polygons(axes[2], tiling_px, color="#0066cc", alpha=0.45, linewidth=2)
+        axes[2].set_title(f"tiling ({len(tiling_px)} predios)")
+        axes[2].axis("off")
+
+        # 4: gabarito (verde)
+        axes[3].imshow(image)
+        if gt_px:
+            draw_polygons(axes[3], gt_px, color="lime", alpha=0.4, linewidth=1.5)
+        axes[3].set_title(f"gabarito ({len(gt_px)} predios)")
+        axes[3].axis("off")
+
+        fig.suptitle(f"img{tid} - comparacao tiling vs resize", fontsize=14, fontweight="bold")
+        plt.tight_layout()
+
+        out_path = os.path.join(args.output_dir, f"compare_img{tid}.png")
+        fig.savefig(out_path, dpi=150, bbox_inches="tight")
+        plt.close(fig)
+        print(f"  img{tid}: tiling={len(tiling_px)}, resize={len(resize_px)}, gt={len(gt_px)} -> {out_path}")
+
+
+def cmd_curves_compare(args):
+    """compara curvas de treino de tiling vs resize lado a lado."""
+    os.makedirs(args.output_dir, exist_ok=True)
+
+    with open(args.history_tiling) as f:
+        ht = json.load(f)
+    with open(args.history_resize) as f:
+        hr = json.load(f)
+
+    fig, axes = plt.subplots(1, 3, figsize=(20, 5))
+
+    et = range(1, len(ht["loss"]) + 1)
+    er = range(1, len(hr["loss"]) + 1)
+
+    # loss
+    axes[0].plot(et, ht["loss"], "b-", label="tiling treino", alpha=0.7)
+    axes[0].plot(et, ht["val_loss"], "b--", label="tiling val", alpha=0.7)
+    axes[0].plot(er, hr["loss"], "r-", label="resize treino", alpha=0.7)
+    axes[0].plot(er, hr["val_loss"], "r--", label="resize val", alpha=0.7)
+    axes[0].set_xlabel("epoca")
+    axes[0].set_ylabel("loss (BCE + Dice)")
+    axes[0].set_title("loss")
+    axes[0].legend(fontsize=8)
+    axes[0].grid(True, alpha=0.3)
+
+    # IoU
+    axes[1].plot(et, ht["iou_metric"], "b-", label="tiling treino", alpha=0.7)
+    axes[1].plot(et, ht["val_iou_metric"], "b--", label="tiling val", alpha=0.7)
+    axes[1].plot(er, hr["iou_metric"], "r-", label="resize treino", alpha=0.7)
+    axes[1].plot(er, hr["val_iou_metric"], "r--", label="resize val", alpha=0.7)
+
+    best_t = max(ht["val_iou_metric"])
+    best_r = max(hr["val_iou_metric"])
+    axes[1].axhline(best_t, color="blue", linestyle=":", alpha=0.4,
+                    label=f"melhor tiling: {best_t:.4f}")
+    axes[1].axhline(best_r, color="red", linestyle=":", alpha=0.4,
+                    label=f"melhor resize: {best_r:.4f}")
+    axes[1].set_xlabel("epoca")
+    axes[1].set_ylabel("IoU")
+    axes[1].set_title("IoU")
+    axes[1].legend(fontsize=8)
+    axes[1].grid(True, alpha=0.3)
+
+    # learning rate
+    axes[2].plot(et, ht["lr"], "b-", label="tiling", alpha=0.7)
+    axes[2].plot(er, hr["lr"], "r-", label="resize", alpha=0.7)
+    axes[2].set_xlabel("epoca")
+    axes[2].set_ylabel("learning rate")
+    axes[2].set_title("learning rate")
+    axes[2].set_yscale("log")
+    axes[2].legend(fontsize=8)
+    axes[2].grid(True, alpha=0.3)
+
+    fig.suptitle("comparacao tiling vs resize - curvas de treinamento",
+                 fontsize=14, fontweight="bold")
+    plt.tight_layout()
+
+    out_path = os.path.join(args.output_dir, "curves_compare.png")
+    fig.savefig(out_path, dpi=150, bbox_inches="tight")
+    plt.close(fig)
+    print(f"  curvas comparativas salvas em: {out_path}")
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="gera figuras pro relatorio e video."
@@ -326,6 +489,23 @@ def main():
     p_gr.add_argument("--data_dir", required=True)
     p_gr.add_argument("--output_dir", default="figures")
 
+    # compare (novo)
+    p_cmp = sub.add_parser("compare", help="compara tiling vs resize vs gabarito")
+    p_cmp.add_argument("--data_dir", required=True)
+    p_cmp.add_argument("--predictions_tiling", required=True)
+    p_cmp.add_argument("--predictions_resize", required=True)
+    p_cmp.add_argument("--output_dir", default="figures")
+    p_cmp.add_argument("--splits_json", default=None)
+    p_cmp.add_argument("--split", default=None)
+    p_cmp.add_argument("--num_tiles", type=int, default=5)
+    p_cmp.add_argument("--tile_ids", nargs="*", default=None)
+
+    # curves_compare (novo)
+    p_ccmp = sub.add_parser("curves_compare", help="curvas de treino tiling vs resize sobrepostas")
+    p_ccmp.add_argument("--history_tiling", required=True)
+    p_ccmp.add_argument("--history_resize", required=True)
+    p_ccmp.add_argument("--output_dir", default="figures")
+
     args = parser.parse_args()
 
     if args.command == "overlay":
@@ -334,6 +514,10 @@ def main():
         cmd_curves(args)
     elif args.command == "grid":
         cmd_grid(args)
+    elif args.command == "compare":
+        cmd_compare(args)
+    elif args.command == "curves_compare":
+        cmd_curves_compare(args)
 
 
 if __name__ == "__main__":
