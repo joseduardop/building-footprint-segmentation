@@ -186,15 +186,15 @@ A configuração tiling (recorte em resolução nativa) superou a resize
 expressiva na revocação. Isso ocorre porque o redimensionamento comprime os
 tiles e suprime as edificações menores, reduzindo o número de detecções
 corretas. O tiling, por preservar a resolução original, detecta mais
-edificações. Ambos os treinamentos ocorreram em GPU, com duração aproximada de
-30 minutos cada.
+edificações. Ambos os treinamentos ocorreram em GPU.
 
 Como validação qualitativa adicional, o modelo treinado foi aplicado a imagens
 completamente fora do domínio do dataset (capturas de tela do Google Maps de
 regiões de Florianópolis). O modelo detectou edificações de forma consistente,
 desde que a escala aparente das construções fosse compatível com a escala vista
-durante o treinamento, evidenciando capacidade de generalização e, ao mesmo
-tempo, sua sensibilidade à escala.
+durante o treinamento, além de outros pontos, como contraste e nitidez, 
+evidenciando capacidade de generalização e, ao mesmo tempo, sua sensibilidade 
+à escala.
 
 ## 9. Próximos Passos
 
@@ -213,3 +213,6 @@ do modelo:
   mais robusto a fontes de imagem diferentes da do treinamento.
 - Substituir o limiar fixo de binarização (0,5) por uma limiarização adaptativa
   (Otsu) e ajustar os parâmetros morfológicos ao domínio.
+- Reportar métricas em múltiplos limiares de IoU (0.3, 0.5 e 0.75) para
+  distinguir entre capacidade de localização (o modelo achou o prédio) e
+  precisão de contorno (o polígono encaixa bem), calculando uma precisão média.
