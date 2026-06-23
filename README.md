@@ -140,6 +140,31 @@ resume o que cada script lê e gera.
 
 ## 8. Resultados e Testes
 
+### 8.1. Métricas de Avaliação
+
+A avaliação é feita no nível de instância (por edificação, não por pixel). Para
+cada prédio predito, verifica-se se existe um prédio real correspondente com
+sobreposição suficiente (IoU > 0,5). As métricas utilizadas são:
+
+- **IoU (Intersection over Union)**: mede a sobreposição entre o polígono
+  predito e o polígono real.
+  `IoU = area(intersecao) / area(uniao)`
+
+- **Precisão**: dos prédios que o modelo detectou, quantos realmente existiam.
+  `Precisao = VP / (VP + FP)`
+
+- **Revocação (Recall)**: dos prédios que realmente existiam, quantos o modelo
+  detectou.
+  `Revocacao = VP / (VP + FN)`
+
+- **F1-score**: média harmônica entre precisão e revocação - equilibra os dois.
+  `F1 = 2 * (Precisao * Revocacao) / (Precisao + Revocacao)`
+
+Onde VP = verdadeiros positivos (acertos), FP = falsos positivos (detecções
+erradas) e FN = falsos negativos (prédios que o modelo não detectou).
+
+### 8.2. Resultados
+
 O conjunto rotulado é composto por 1148 tiles (650x650, 16 bits), divididos em
 803 para treino, 172 para validação e 173 para teste. A avaliação quantitativa
 foi feita sobre o conjunto de teste interno, que possui rótulos.
