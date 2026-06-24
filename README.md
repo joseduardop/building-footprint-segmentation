@@ -199,46 +199,52 @@ evidenciando capacidade de generalização e, ao mesmo tempo, sua sensibilidade
 ## 9. Passos Futuros
 
 O treinamento da pipeline está validado e produz resultados consistentes. A
-partir desta base, os passos futuros visam melhorar o desempenho, a robustez e
-a abrangência da avaliação:
+partir desta base, os passos futuros visam melhorar o desempenho e a robustez
+do modelo:
 
-### Dados e treinamento
+### Treinamento
 
 - Reaproveitar os conjuntos de validação e teste no treino: como a comparação
   entre tiling e resize já foi concluída, é possível treinar com mais dados, sem
   reservar o split de teste interno, aumentando a quantidade de exemplos
   rotulados disponíveis.
+- Aumentar a patience do early stopping (de 10 para 15-20 épocas) para dar mais
+  chance do modelo se recuperar após fases de estagnação.
 - Experimentar treinamento com learning rate fixo (sem ReduceLROnPlateau) para
-  avaliar se o scheduler está cortando o aprendizado prematuramente. O gráfico
-  de learning rate mostra quedas que podem estar limitando a convergência.
-- Aumentar a patience do early stopping (de 10 para 15-20 épocas) para dar
-  mais chance do modelo se recuperar após fases de estagnação.
-- Aplicar augmentation mais agressivo: distorção elástica, rotações arbitrárias
-  e variação de escala, forçando o modelo a generalizar melhor.
+  avaliar se o scheduler está cortando o aprendizado prematuramente.
+- Treinar com múltiplas escalas (crops de 256 e 512 redimensionados para o
+  mesmo tamanho de entrada), ensinando o modelo a reconhecer edificações de
+  diferentes tamanhos. Nos testes com imagens externas, observou-se que o modelo
+  é sensível à escala da imagem: quando o zoom não corresponde ao do treinamento
+  (~0,3 m/pixel), a detecção falha. O treinamento multi-escala reduziria essa
+  dependência.
 
 ### Arquitetura e transfer learning
 
-- Experimentar backbones maiores (ResNet50, EfficientNet) que extraem features
-  mais ricas, ao custo de treino mais lento e maior uso de VRAM.
-- Aplicar fine-tuning progressivo: congelar o encoder nas primeiras épocas e
-  descongelar gradualmente, refinando os pesos pré-treinados com mais cuidado.
+- Aplicar fine-tuning sobre o modelo atual e experimentar outras estratégias de
+  transfer learning, com diferentes backbones (ResNet50, EfficientNet) ou pesos
+  pré-treinados.
 
 ### Pós-processamento e inferência
 
-- Substituir o limiar fixo de binarização (0,5) por limiarização adaptativa
+- Substituir o limiar fixo de binarização (0,5) por uma limiarização adaptativa
   (Otsu), calculando o melhor corte por tile a partir da distribuição de
   probabilidades da máscara.
-- Aumentar o overlap do tiling na inferência (stride 64, 75% de sobreposição)
-  para suavizar as emendas e melhorar a detecção de prédios nas bordas dos
-  patches.
-- Implementar realce de nitidez e contraste (CLAHE) como pré-processamento
-  para imagens fora do domínio (Google Maps, drones), aproximando a qualidade
-  visual da fonte de treinamento (WorldView-3).
+- Implementar uma etapa de realce de nitidez e contraste para imagens externas
+  ao domínio do dataset (capturas de satélite de outras fontes, imagens aéreas
+  de drones), tornando o modelo mais robusto a fontes de imagem diferentes da
+  do treinamento.
+- Testar diferentes níveis de sobreposição entre os patches na inferência. Hoje
+  os recortes de 256x256 se sobrepõem em 50%, e a predição final de cada pixel é
+  a média das predições dos patches que o cobrem. Aumentar essa sobreposição
+  (para 75%) suavizaria as transições entre patches e melhoraria a detecção de
+  prédios que caem nas bordas dos recortes, ao custo de uma inferência mais lenta.
 
 ### Avaliação
 
 - Reportar métricas em múltiplos limiares de IoU (0.3, 0.5 e 0.75) para
   distinguir entre capacidade de localização (o modelo achou o prédio) e
   precisão de contorno (o polígono encaixa bem), calculando uma precisão média.
-- Treinar com múltiplas escalas (crops de 256 e 512 redimensionados), ensinando
-  o modelo a reconhecer prédios de diferentes tamanhos numa mesma passada.
+- Avaliar o impacto do data augmentation utilizado (flip horizontal, flip
+  vertical, rotação 90 graus e variação de brilho/contraste) comparando o
+  desempenho com e sem augmentation para medir sua contribuição real.
