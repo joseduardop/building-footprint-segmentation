@@ -196,23 +196,49 @@ durante o treinamento, além de outros pontos, como contraste e nitidez,
 evidenciando capacidade de generalização e, ao mesmo tempo, sua sensibilidade 
 à escala.
 
-## 9. Próximos Passos
+## 9. Passos Futuros
 
 O treinamento da pipeline está validado e produz resultados consistentes. A
-partir desta base, os próximos passos visam melhorar o desempenho e a robustez
-do modelo:
+partir desta base, os passos futuros visam melhorar o desempenho, a robustez e
+a abrangência da avaliação:
+
+### Dados e treinamento
 
 - Reaproveitar os conjuntos de validação e teste no treino: como a comparação
   entre tiling e resize já foi concluída, é possível treinar com mais dados, sem
   reservar o split de teste interno, aumentando a quantidade de exemplos
   rotulados disponíveis.
-- Aplicar fine-tuning sobre o modelo atual e experimentar outras estratégias de
-  transfer learning, com diferentes backbones ou pesos pré-treinados.
-- Implementar uma etapa de realce de nitidez e contraste para imagens fora do
-  domínio do dataset (por exemplo, capturas do Google Maps), tornando o modelo
-  mais robusto a fontes de imagem diferentes da do treinamento.
-- Substituir o limiar fixo de binarização (0,5) por uma limiarização adaptativa
-  (Otsu) e ajustar os parâmetros morfológicos ao domínio.
+- Experimentar treinamento com learning rate fixo (sem ReduceLROnPlateau) para
+  avaliar se o scheduler está cortando o aprendizado prematuramente. O gráfico
+  de learning rate mostra quedas que podem estar limitando a convergência.
+- Aumentar a patience do early stopping (de 10 para 15-20 épocas) para dar
+  mais chance do modelo se recuperar após fases de estagnação.
+- Aplicar augmentation mais agressivo: distorção elástica, rotações arbitrárias
+  e variação de escala, forçando o modelo a generalizar melhor.
+
+### Arquitetura e transfer learning
+
+- Experimentar backbones maiores (ResNet50, EfficientNet) que extraem features
+  mais ricas, ao custo de treino mais lento e maior uso de VRAM.
+- Aplicar fine-tuning progressivo: congelar o encoder nas primeiras épocas e
+  descongelar gradualmente, refinando os pesos pré-treinados com mais cuidado.
+
+### Pós-processamento e inferência
+
+- Substituir o limiar fixo de binarização (0,5) por limiarização adaptativa
+  (Otsu), calculando o melhor corte por tile a partir da distribuição de
+  probabilidades da máscara.
+- Aumentar o overlap do tiling na inferência (stride 64, 75% de sobreposição)
+  para suavizar as emendas e melhorar a detecção de prédios nas bordas dos
+  patches.
+- Implementar realce de nitidez e contraste (CLAHE) como pré-processamento
+  para imagens fora do domínio (Google Maps, drones), aproximando a qualidade
+  visual da fonte de treinamento (WorldView-3).
+
+### Avaliação
+
 - Reportar métricas em múltiplos limiares de IoU (0.3, 0.5 e 0.75) para
   distinguir entre capacidade de localização (o modelo achou o prédio) e
   precisão de contorno (o polígono encaixa bem), calculando uma precisão média.
+- Treinar com múltiplas escalas (crops de 256 e 512 redimensionados), ensinando
+  o modelo a reconhecer prédios de diferentes tamanhos numa mesma passada.
