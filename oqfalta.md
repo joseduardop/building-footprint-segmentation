@@ -15,22 +15,24 @@
 - [x] validacao no tile inteiro (nao so o centro)
 - [x] filtro por split no postprocess e evaluate
 - [x] traduzido pra portugues
+- [x] treino resize completo e comparado com tiling (F1 0.56 vs 0.62)
+- [x] dataset_check.ipynb (estrutura, tif preto, tif->geojson->mascara, distribuicao)
+- [x] relatorio.ipynb (codigo + resultados + discussao, metricas ao vivo)
 
 ## pendente
 
 ### entregas da disciplina
 - [ ] video explicativo (< 10 min)
 - [ ] resumo 1 pagina 2 colunas (pdf)
-- [ ] relatorio.ipynb (notebook com codigo + resultados + discussao)
 
-### experimento resize
-- [ ] rodar treino com `--mode resize` e comparar com tiling
-- [ ] documentar a diferenca no relatorio (tiling preserva detalhe
-      mas tem emendas; resize perde detalhe mas e mais simples)
+### revisao final do relatorio
+- [ ] validar a escrita do markdown do relatorio (revisar texto, sem erro)
+- [ ] confirmar que o codigo do notebook esta validado (roda sem erro)
+- [ ] procurar referencias dos slides da disciplina e do que a gente usou
+      (U-Net, ResNet, SpaceNet, livro do Gonzalez) e citar direito
 
-### notebook de validacao do dataset
-- [ ] dataset_check.ipynb: estrutura de pastas, por que o tif abre preto,
-      relacao tif -> geojson -> mascara, distribuicao de predios por tile
+### entrega
+- [ ] arrumar o repositorio github de entrega do projeto
 
 ### melhorias possiveis (nao obrigatorias)
 - [ ] threshold otsu no pos-processamento (em vez de 0.5 fixo)
