@@ -3,12 +3,19 @@
 EEL7815 - Processamento Digital de Imagens — UFSC, 2026.1
 Duração alvo: **menos de 10 minutos**
 
-Estrutura abaixo: **[tempo]** | **o que mostrar na tela** | **o que falar**.
-A fala está em tom de apresentação, pode adaptar pras suas palavras.
+Estrutura abaixo: **[tempo]** | **conteúdo do slide** | **o que mostrar na tela** |
+**o que falar**. A fala está em tom de apresentação, pode adaptar pras suas
+palavras. O bloco **Slide** são os bullets pra colar direto no slide (título +
+tópicos curtos).
 
 ---
 
 ## 1. Contexto e problemática — [~1 min]
+
+**Slide:** *Reconhecer edificações em imagens de satélite*
+- Mapear construções na mão é inviável em escala
+- Aplicações: cartografia, planejamento urbano, resposta a desastres
+- É um problema de **segmentação**: classificar cada pixel (edificação x fundo)
 
 **Tela:** uma imagem de satélite de um bairro (pode ser um tile do dataset ou
 uma captura de satélite externa).
@@ -26,6 +33,12 @@ gente precisa marcar exatamente quais pixels são edificação e quais são fund
 
 ## 2. Proposta e objetivo — [~1 min]
 
+**Slide:** *Proposta: pipeline completa de segmentação*
+- Entrada: imagem de satélite → Saída: polígonos georreferenciados (lat/lon)
+- Resultado pronto pra abrir em SIG (ex.: QGIS)
+- PDI clássico (realce, limiarização, morfologia) + CNN (U-Net)
+- Diagrama: imagem → modelo → polígonos no mapa
+
 **Tela:** um slide simples com o fluxo: imagem de satélite -> modelo -> polígonos
 no mapa. (Pode usar o diagrama do README.)
 
@@ -41,6 +54,12 @@ até o resultado vetorial."
 ---
 
 ## 3. Dataset — [~1 min 30]
+
+**Slide:** *Dataset: SpaceNet 2 — Paris*
+- 1148 imagens 650×650, 16 bits, 3 bandas (RGB-PanSharpen)
+- Rótulos vetoriais (GeoJSON) das edificações
+- Imagem 16 bits abre "preta" → normalização por percentil (realce radiométrico)
+- Split: 70% treino / 15% validação / 15% teste
 
 **Tela:** abrir o `notebooks/dataset_check.ipynb` e mostrar o grid de tiles
 (`figures/dataset_grid.png`). Mostrar também um tif "preto" e o mesmo depois de
@@ -60,6 +79,12 @@ teste."
 
 ## 4. Organização de arquivos — [~1 min]
 
+**Slide:** *Organização do projeto*
+- `scripts/` — pipeline: `dataset` → `train` → `postprocess` → `evaluate`
+- `util/` — apoio (máscaras, figuras)
+- `notebooks/` — só análise e demo (código pesado em `.py`)
+- `artefatos/` — modelos, métricas, predições | `figures/` — figuras
+
 **Tela:** mostrar a árvore de pastas do projeto (README seção de organização):
 `scripts/`, `util/`, `notebooks/`, `artefatos/`, `figures/`.
 
@@ -75,6 +100,13 @@ o código pesado tá todo em `.py`. Os modelos e resultados gerados ficam em
 ---
 
 ## 5. Arquitetura proposta — [~1 min 30]
+
+**Slide:** *Arquitetura: U-Net + ResNet34*
+- U-Net: codificador (comprime/extrai) + decodificador (reconstrói) com skip
+- Backbone ResNet34 pré-treinado no ImageNet (transfer learning)
+- Perda BCE + Dice | Adam (lr 1e-4)
+- Duas estratégias: **tiling** (preserva detalhe) x **resize** (mais simples)
+- Pós-processamento: limiarização → morfologia → contornos → lat/lon
 
 **Tela:** diagrama da U-Net (README seção arquitetura) e o trecho do código do
 `build_model`. Mostrar também os dois modos: tiling e resize.
@@ -95,6 +127,12 @@ limiarização e morfologia pra limpar a máscara e extrair os contornos."
 
 ## 6. Resultados — [~1 min 30]
 
+**Slide:** *Resultados (conjunto de teste)*
+- | Métrica | Tiling | Resize |  →  F1 **0,62** x 0,56 | IoU **0,72** x 0,70
+- Tiling vence em todas; maior diferença na **revocação** (acha mais prédios)
+- Resize encolhe a imagem → prédios pequenos somem
+- Cores na comparação: resize (vermelho), tiling (azul), gabarito (verde)
+
 **Tela:** abrir o `relatorio.ipynb` na seção de resultados — mostrar as curvas de
 treino e a tabela de métricas. Mostrar uma figura de comparação
 (`figures/compare_imgXXX.png`) com original, resize, tiling e gabarito.
@@ -111,6 +149,12 @@ acompanha bem melhor os prédios menores."
 ---
 
 ## 7. Demo — [~1 min 30]
+
+**Slide:** *Demonstração*
+- Modelo treinado rodando em imagem nova (nunca vista)
+- Funciona até em imagens de satélite externas ao dataset
+- Limitação: sensível à **escala** (precisa de zoom ~0,3 m/pixel)
+- Trabalho futuro: treino com múltiplas escalas
 
 **Tela:** rodar o `notebooks/demo.ipynb` ao vivo: carregar o modelo, escolher uma
 imagem (um tile de teste e, se der, uma imagem de satélite externa), rodar a
