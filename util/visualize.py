@@ -222,8 +222,6 @@ def cmd_curves(args):
     ax1.set_title("Loss por epoca")
     ax1.legend()
     ax1.grid(True, alpha=0.3)
-    if args.loss_ylim:
-        ax1.set_ylim(args.loss_ylim)
 
     # IoU
     ax2.plot(epochs, h["iou_metric"], "b-", label="Treino")
@@ -237,14 +235,12 @@ def cmd_curves(args):
     ax2.set_title("IoU por epoca")
     ax2.legend()
     ax2.grid(True, alpha=0.3)
-    if args.iou_ylim:
-        ax2.set_ylim(args.iou_ylim)
 
     fig.suptitle("Curvas de Treinamento - U-Net ResNet34", fontsize=14,
                  fontweight="bold")
     plt.tight_layout()
 
-    out_path = os.path.join(args.output_dir, args.output_name)
+    out_path = os.path.join(args.output_dir, "training_curves.png")
     fig.savefig(out_path, dpi=150, bbox_inches="tight")
     plt.close(fig)
     print(f"  curvas salvas em: {out_path}")
@@ -487,11 +483,6 @@ def main():
     p_cv = sub.add_parser("curves", help="curvas de loss/IoU do treino")
     p_cv.add_argument("--history", required=True, help="training_history.json")
     p_cv.add_argument("--output_dir", default="figures")
-    p_cv.add_argument("--output_name", default="training_curves.png")
-    p_cv.add_argument("--loss_ylim", type=float, nargs=2, default=None,
-                       help="limites fixos do eixo Y do grafico de loss (min max)")
-    p_cv.add_argument("--iou_ylim", type=float, nargs=2, default=None,
-                       help="limites fixos do eixo Y do grafico de IoU (min max)")
 
     # grid
     p_gr = sub.add_parser("grid", help="grid de amostras do dataset (vazio/medio/denso)")
