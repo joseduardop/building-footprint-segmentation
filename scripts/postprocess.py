@@ -97,8 +97,7 @@ def predict_tile_tiling(model, image, patch_size=256, backbone="resnet34",
     pred_sum = np.zeros((h, w), dtype=np.float32)
     count_map = np.zeros((h, w), dtype=np.float32)
 
-    # calcula posicoes dos patches. stride padrao = patch_size (sem overlap);
-    # um stride menor sobrepoe patches, removendo as emendas duras onde
+    # calcula posicoes dos patches. stride padrao = patch_size (sem overlap); # um stride menor sobrepoe patches, removendo as emendas duras onde
     # um predio na borda do patch seria cortado ao meio.
     stride = stride or patch_size
 
