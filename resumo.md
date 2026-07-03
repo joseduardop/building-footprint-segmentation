@@ -1,10 +1,7 @@
 # Segmentação de Edificações em Imagens de Satélite com U-Net e ResNet34
 
-**José Eduardo Pereira** — EEL7815 Processamento Digital de Imagens — UFSC, 2026.1
+**José Eduardo Pereira** - EEL7815 Processamento Digital de Imagens - UFSC, 2026.1
 Prof. Joceli Mayer
-
-> Observação de formatação: o texto abaixo está em fluxo único; ao converter
-> para .docx, aplicar layout de **duas colunas** e manter em **uma página**.
 
 ---
 
@@ -14,8 +11,8 @@ Este trabalho apresenta uma pipeline completa para segmentação de edificaçõe
 imagens de satélite e extração de polígonos georreferenciados. A solução combina
 técnicas de Processamento Digital de Imagens (realce radiométrico, limiarização e
 morfologia matemática) com uma rede neural U-Net de backbone ResNet34 pré-treinado.
-Foram comparadas duas estratégias de tratamento da resolução de entrada — *tiling*
-e *resize* —, com a primeira alcançando F1-score de 0,62 e IoU médio de 0,72 sobre
+Foram comparadas duas estratégias de tratamento da resolução de entrada - *tiling*
+e *resize* -, com a primeira alcançando F1-score de 0,62 e IoU médio de 0,72 sobre
 o conjunto de teste do dataset SpaceNet 2 (Paris).
 
 ## 1. Introdução
@@ -85,3 +82,10 @@ Biomedical Image Segmentation*. MICCAI, 2015. • HE, K. et al. *Deep Residual
 Learning for Image Recognition*. CVPR, 2016. • VAN ETTEN, A. et al. *SpaceNet: A
 Remote Sensing Dataset and Challenge Series*. 2018. • GONZALEZ, R. C.; WOODS, R. E.
 *Digital Image Processing*. Pearson.
+
+SpaceNet Challenge. Disponível em: <https://github.com/spacenetchallenge>.
+SpaceNet Datasets. Disponível em: <https://spacenet.ai/datasets/>.
+SpaceNet Buildings Dataset v2. AWS Registry of Open Data. Disponível em:
+<https://registry.opendata.aws/spacenet/>.
+SpaceNet Buildings Dataset v2. Disponível em:
+<https://spacenet.ai/spacenet-buildings-dataset-v2/>.
