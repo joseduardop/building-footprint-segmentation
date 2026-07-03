@@ -1,5 +1,7 @@
 # Segmentação de Edificações em Imagens de Satélite - SpaceNet 2 (AOI 3, Paris)
 
+Vídeo de apresentação: https://youtu.be/iML33wqXpv8
+
 ## 1. Disciplina
 
 Este é um projeto desenvolvido para a disciplina EEL7815 - Processamento Digital
@@ -69,6 +71,27 @@ O treinamento exige uma GPU NVIDIA com CUDA. No Windows, o uso de GPU exige o
 WSL2 (Ubuntu), pois o TensorFlow 2.16+ não oferece suporte a GPU nativamente no
 Windows. O treinamento deste projeto foi realizado em uma RTX 3060 Ti (8 GB),
 executada por meio do WSL2.
+
+### 4.4. Download do Dataset
+
+O dataset SpaceNet 2 é distribuído publicamente pela AWS via bucket S3, sem
+necessidade de credenciais (`--no-sign-request`). Passos:
+
+```powershell
+pip install awscli # ter python e pip instalado
+```
+
+```powershell
+aws configure # enter em tudo dps
+```
+
+```powershell
+aws s3 cp s3://spacenet-dataset/spacenet/SN2_buildings/tarballs/SN2_buildings_train_AOI_3_Paris.tar.gz . --no-sign-request
+```
+
+```powershell
+aws s3 cp s3://spacenet-dataset/spacenet/SN2_buildings/tarballs/AOI_3_Paris_Test_public.tar.gz . --no-sign-request
+```
 
 ## 5. Organização do Repositório
 
@@ -189,8 +212,8 @@ corretas. O tiling, por preservar a resolução original, detecta mais
 edificações. Ambos os treinamentos ocorreram em GPU.
 
 Como validação qualitativa adicional, o modelo treinado foi aplicado a imagens
-completamente fora do domínio do dataset (capturas de tela do Google Maps de
-regiões de Florianópolis). O modelo detectou edificações de forma consistente,
+completamente fora do domínio do dataset (capturas de tela de imagens externas
+de regiões de Florianópolis). O modelo detectou edificações de forma consistente,
 desde que a escala aparente das construções fosse compatível com a escala vista
 durante o treinamento, além de outros pontos, como contraste e nitidez, 
 evidenciando capacidade de generalização e, ao mesmo tempo, sua sensibilidade 
